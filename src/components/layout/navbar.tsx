@@ -1,11 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { Shield, Terminal, Activity, FileText } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
-import logo from "@/assets/logo.png";
+import React from 'react';
+import Link from 'next/link';
+import { Terminal, Database } from 'lucide-react';
 
 export function Navbar() {
   return (
@@ -13,32 +10,34 @@ export function Navbar() {
       <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Technical Brand Signature */}
         <Link href="/" className="flex items-center gap-3 group">
-          <Image src={logo} alt="Phishlens" width={40} height={40} />
-          <span className="font-bold">PhishLens</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded border border-white/20 bg-[#161b22] text-[#e6edf3] font-mono font-bold text-xs group-hover:border-[#388bfd] group-hover:text-[#58a6ff] transition-all">
+            PL
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-base font-bold tracking-tight text-white font-heading">
+              Phish<span className="text-[#58a6ff]">Lens</span>
+            </span>
+            <span className="text-[11px] font-mono text-[#8b949e] hidden sm:inline">
+              // Threat Console v1.0
+            </span>
+          </div>
         </Link>
 
         {/* Center Operations Links */}
         <nav className="hidden md:flex items-center gap-6 text-xs font-mono text-[#8b949e]">
           <Link
             href="/"
-            className="text-white hover:text-[#58a6ff] transition-colors flex items-center gap-1.5"
+            className="hover:text-[#58a6ff] transition-colors flex items-center gap-1.5"
           >
             <Terminal className="h-3.5 w-3.5 text-[#58a6ff]" />
             <span>[ Scanner Console ]</span>
           </Link>
           <Link
-            href="#heuristics"
-            className="hover:text-white transition-colors flex items-center gap-1.5"
+            href="/history"
+            className="hover:text-[#58a6ff] transition-colors flex items-center gap-1.5"
           >
-            <Activity className="h-3.5 w-3.5 text-[#d29922]" />
-            <span>[ Heuristic Rules ]</span>
-          </Link>
-          <Link
-            href="#telemetry"
-            className="hover:text-white transition-colors flex items-center gap-1.5"
-          >
-            <FileText className="h-3.5 w-3.5 text-[#3fb950]" />
-            <span>[ Telemetry Dossier ]</span>
+            <Database className="h-3.5 w-3.5 text-[#3fb950]" />
+            <span>[ Incident Registry ]</span>
           </Link>
         </nav>
 

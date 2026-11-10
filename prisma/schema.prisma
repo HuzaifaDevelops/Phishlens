@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum RiskLevel {
+  SAFE
+  SUSPICIOUS
+  MALICIOUS
+}
+
+model Scan {
+  id                String    @id @default(cuid())
+  inputUrl          String    @db.VarChar(2048)
+  normalizedUrl     String    @db.VarChar(2048)
+  finalUrl          String    @db.VarChar(2048)
+  riskScore         Int
+  riskLevel         RiskLevel
+  impersonatedBrand String?
+  confidenceScore   Int       @default(90)
+  aiSummary         String    @db.Text
+  threatTactics     Json?
+  recommendedAction String    @db.Text
+  redirectChain     Json
+  whoisData         Json
+  sslData           Json
+  threatFeeds       Json
+  heuristics        Json
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([normalizedUrl(length: 255)])
+  @@index([createdAt])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

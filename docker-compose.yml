@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: phishlens-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: phishlens
+      MYSQL_USER: phishlens_user
+      MYSQL_PASSWORD: phishlens_password
+      MYSQL_ROOT_PASSWORD: phishlens_root_secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "phishlens_user", "-pphishlens_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql_data:
