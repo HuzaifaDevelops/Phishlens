@@ -80,9 +80,6 @@ export function Navbar() {
         <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           {/* Brand */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400 group-hover:bg-indigo-100 dark:group-hover:bg-slate-700 transition-colors">
-              <Shield className="h-4 w-4" />
-            </div>
             <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white font-sans">
               Phish<span className="text-indigo-600 dark:text-sky-400">Lens</span>
             </span>
