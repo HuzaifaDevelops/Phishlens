@@ -24,6 +24,11 @@ const jakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "PhishLens — Forensic URL Threat Intelligence",
   description: "Check if a link is safe before you click it. Automated heuristics, DNS, WHOIS, TLS analysis, and explainable AI verdicts.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

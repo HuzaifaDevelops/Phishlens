@@ -40,7 +40,7 @@ export function Footer() {
 
         <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
           <div>
-            PhishLens — Web Technologies Capstone. Built with Next.js 16, Tailwind CSS, MySQL &amp; Prisma.
+            PhishLens
           </div>
           <div className="text-slate-400 dark:text-slate-500">
             &copy; {new Date().getFullYear()} PhishLens

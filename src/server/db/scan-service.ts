@@ -2,6 +2,13 @@ import { prisma } from './prisma';
 import { ScanResult, RiskLevel } from '@/lib/types';
 import { Prisma } from '@prisma/client';
 
+export interface SaveScanOptions {
+  visitorId?: string;
+  userId?: string | null;
+  deviceHash?: string | null;
+  ipAddress?: string | null;
+}
+
 /**
  * Checks MySQL for an existing scan of this normalized URL within the last maxAgeHours.
  * Returns the cached ScanResult or null if none found.
@@ -58,17 +65,58 @@ export async function findCachedScan(
 }
 
 /**
- * Persists a completed scan result to MySQL, linked to a specific visitorId.
+ * Counts unauthenticated scans across network IP, hardware deviceHash, and visitorId.
+ * Strictly prevents bypass via VPN (deviceHash catches machine) or Incognito (IP catches network).
+ */
+export async function countAnonymousScans(
+  ipAddress?: string,
+  deviceHash?: string,
+  visitorId?: string
+): Promise<number> {
+  try {
+    const conditions: any[] = [];
+    if (deviceHash && deviceHash !== 'unknown' && deviceHash !== 'server-environment') {
+      conditions.push({ deviceHash });
+    }
+    if (ipAddress && ipAddress !== '127.0.0.1' && ipAddress !== '::1') {
+      conditions.push({ ipAddress });
+    }
+    if (visitorId && visitorId !== 'anonymous') {
+      conditions.push({ visitorId });
+    }
+
+    if (conditions.length === 0) return 0;
+
+    return await prisma.scan.count({
+      where: {
+        userId: null,
+        OR: conditions,
+      },
+    });
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Persists a completed scan result to MySQL, linked to user account, deviceHash, IP, and visitorId.
  */
 export async function saveScanRecord(
   scan: ScanResult,
-  visitorId = 'anonymous'
+  options?: SaveScanOptions | string
 ): Promise<string | null> {
   try {
+    const opts: SaveScanOptions = typeof options === 'string'
+      ? { visitorId: options }
+      : options || {};
+
     const record = await prisma.scan.create({
       data: {
         id: scan.id,
-        visitorId: visitorId || 'anonymous',
+        userId: opts.userId || null,
+        visitorId: opts.visitorId || 'anonymous',
+        deviceHash: opts.deviceHash || null,
+        ipAddress: opts.ipAddress || null,
         inputUrl: scan.inputUrl,
         normalizedUrl: scan.normalizedUrl,
         finalUrl: scan.finalUrl,
@@ -135,15 +183,23 @@ export async function getScanRecordById(id: string): Promise<ScanResult | null> 
 }
 
 /**
- * Retrieves the most recent scan records, optionally filtered by visitorId.
+ * Retrieves the most recent scan records, filtered by userId (if authenticated) or visitorId.
  */
 export async function getRecentScans(
   limit = 50,
-  visitorId?: string
+  visitorId?: string,
+  userId?: string
 ): Promise<ScanResult[]> {
   try {
+    const where: any = {};
+    if (userId) {
+      where.userId = userId;
+    } else if (visitorId) {
+      where.visitorId = visitorId;
+    }
+
     const records = await prisma.scan.findMany({
-      where: visitorId ? { visitorId } : undefined,
+      where: Object.keys(where).length > 0 ? where : undefined,
       take: limit,
       orderBy: {
         createdAt: 'desc',

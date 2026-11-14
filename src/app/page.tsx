@@ -48,14 +48,19 @@ export default function HomePage() {
 
       if (res.status !== 200) {
         setErrorMessage(res.data?.message || 'Investigation query rejected by security controls.');
-        // Fallback to preset if available so user is never stuck
-        if (presetKey && MOCK_SCANS[presetKey]) {
+        if (res.data?.error === 'AUTH_REQUIRED') {
+          // Trigger Auth Modal immediately on free scan limit exhaustion
+          window.dispatchEvent(
+            new CustomEvent('phishlens:open-auth', { detail: { tab: 'signup' } })
+          );
+        } else if (presetKey && MOCK_SCANS[presetKey]) {
           setCurrentScan({ ...MOCK_SCANS[presetKey], inputUrl: url });
         }
         return;
       }
 
       setCurrentScan(res.data);
+      window.dispatchEvent(new CustomEvent('phishlens:refresh-quota'));
     } catch {
       if (presetKey && MOCK_SCANS[presetKey]) {
         setCurrentScan({ ...MOCK_SCANS[presetKey], inputUrl: url });

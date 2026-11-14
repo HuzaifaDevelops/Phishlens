@@ -7,7 +7,8 @@ import { traceRedirects } from '@/server/scanner/redirect-tracer';
 import { evaluateHeuristics } from '@/server/scanner/heuristics';
 import { synthesizeAiBriefing } from '@/server/scanner/ai-synthesizer';
 import { queryVirusTotal } from '@/server/scanner/virustotal';
-import { findCachedScan, saveScanRecord } from '@/server/db/scan-service';
+import { findCachedScan, saveScanRecord, countAnonymousScans } from '@/server/db/scan-service';
+import { getSessionUser } from '@/server/auth/session';
 import { ScanResult, ThreatFeedMatch } from '@/lib/types';
 
 const ScanRequestSchema = z.object({
@@ -52,17 +53,48 @@ export async function POST(req: NextRequest) {
     const normalizedUrl = rawUrl.replace(/\/$/, '');
     const initialHost = parsedUrl.hostname;
 
+    // Client Identification & Session
+    const sessionUser = await getSessionUser(req);
+
+    const ipAddress =
+      req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+      req.headers.get('x-real-ip') ||
+      '127.0.0.1';
+
+    const deviceHash = req.headers.get('x-device-hash') || 'unknown';
     const visitorId =
       req.headers.get('x-visitor-id') ||
       req.cookies.get('phishlens_visitor_id')?.value ||
       'anonymous';
+
+    // STRICT 10-SCAN ANONYMOUS LIMIT CHECK
+    // If user is not logged in, count scans tied to this device, IP, or visitorId
+    if (!sessionUser) {
+      const scansUsed = await countAnonymousScans(ipAddress, deviceHash, visitorId);
+      if (scansUsed >= 10) {
+        return NextResponse.json(
+          {
+            error: 'AUTH_REQUIRED',
+            message: 'You have reached the free limit of 10 scans. Please sign up or log in to continue with unlimited scans.',
+            scansUsed,
+            maxAllowed: 10,
+            limitReached: true,
+          },
+          { status: 403 }
+        );
+      }
+    }
 
     // 1. FAST CACHE CHECK (Return previous scan if under 24 hours old)
     if (!parseResult.data.forceRefresh) {
       const cachedScan = await findCachedScan(normalizedUrl, 24);
       if (cachedScan) {
         return NextResponse.json(
-          { ...cachedScan, isCached: true },
+          {
+            ...cachedScan,
+            isCached: true,
+            isUnlimited: Boolean(sessionUser),
+          },
           { status: 200, headers: { 'X-Cache-Status': 'HIT' } }
         );
       }
@@ -125,8 +157,20 @@ export async function POST(req: NextRequest) {
         ],
       };
 
-      await saveScanRecord(demoResult, visitorId);
-      return NextResponse.json(demoResult, { status: 200, headers: { 'X-Cache-Status': 'MISS' } });
+      await saveScanRecord(demoResult, {
+        visitorId,
+        userId: sessionUser?.id || null,
+        deviceHash,
+        ipAddress,
+      });
+
+      return NextResponse.json(
+        {
+          ...demoResult,
+          isUnlimited: Boolean(sessionUser),
+        },
+        { status: 200, headers: { 'X-Cache-Status': 'MISS' } }
+      );
     }
 
     // 2. SSRF GUARD: Validate host does not resolve to private/loopback/cloud metadata
@@ -235,9 +279,20 @@ export async function POST(req: NextRequest) {
     };
 
     // 9. ASYNCHRONOUSLY SAVE TO MYSQL
-    await saveScanRecord(result, visitorId);
+    await saveScanRecord(result, {
+      visitorId,
+      userId: sessionUser?.id || null,
+      deviceHash,
+      ipAddress,
+    });
 
-    return NextResponse.json(result, { status: 200, headers: { 'X-Cache-Status': 'MISS' } });
+    return NextResponse.json(
+      {
+        ...result,
+        isUnlimited: Boolean(sessionUser),
+      },
+      { status: 200, headers: { 'X-Cache-Status': 'MISS' } }
+    );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal pipeline error';
     return NextResponse.json(
