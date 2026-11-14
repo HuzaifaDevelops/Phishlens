@@ -1,59 +1,82 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Terminal, Database } from 'lucide-react';
+import { Shield, Terminal, Database, Sun, Moon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 export function Navbar() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-[#07090d]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#0b1220]/95 backdrop-blur-md transition-colors">
       <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        {/* Technical Brand Signature */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded border border-white/20 bg-[#161b22] text-[#e6edf3] font-mono font-bold text-xs group-hover:border-[#388bfd] group-hover:text-[#58a6ff] transition-all">
-            PL
+        {/* Brand */}
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400 group-hover:bg-indigo-100 dark:group-hover:bg-slate-700 transition-colors">
+            <Shield className="h-4 w-4" />
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-base font-bold tracking-tight text-white font-heading">
-              Phish<span className="text-[#58a6ff]">Lens</span>
-            </span>
-            <span className="text-[11px] font-mono text-[#8b949e] hidden sm:inline">
-              // Threat Console v1.0
-            </span>
-          </div>
+          <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white font-sans">
+            Phish<span className="text-indigo-600 dark:text-sky-400">Lens</span>
+          </span>
         </Link>
 
-        {/* Center Operations Links */}
-        <nav className="hidden md:flex items-center gap-6 text-xs font-mono text-[#8b949e]">
+        {/* Navigation Links */}
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400 font-sans">
           <Link
             href="/"
-            className="hover:text-[#58a6ff] transition-colors flex items-center gap-1.5"
+            className="hover:text-indigo-600 dark:hover:text-sky-400 transition-colors flex items-center gap-1.5"
           >
-            <Terminal className="h-3.5 w-3.5 text-[#58a6ff]" />
-            <span>[ Scanner Console ]</span>
+            <Terminal className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-sky-400" />
+            <span>Scanner</span>
           </Link>
           <Link
             href="/history"
-            className="hover:text-[#58a6ff] transition-colors flex items-center gap-1.5"
+            className="hover:text-indigo-600 dark:hover:text-sky-400 transition-colors flex items-center gap-1.5"
           >
-            <Database className="h-3.5 w-3.5 text-[#3fb950]" />
-            <span>[ Incident Registry ]</span>
+            <Database className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-sky-400" />
+            <span>Incidents</span>
           </Link>
         </nav>
 
-        {/* Right Status Indicator */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded border border-white/[0.08] bg-[#0d1117] px-2.5 py-1 text-[11px] font-mono text-[#8b949e]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#3fb950]" />
-            <span className="text-[#c9d1d9]">SYSTEM NOMINAL</span>
+        {/* Right Status & Actions */}
+        <div className="flex items-center gap-2.5">
+          {/* Online Indicator */}
+          <div className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1 text-xs font-sans text-slate-600 dark:text-slate-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span>Online</span>
           </div>
 
+          {/* Light / Dark Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            aria-label="Toggle theme"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+          >
+            {mounted ? (
+              resolvedTheme === 'dark' ? (
+                <Sun className="h-4 w-4 text-amber-400" />
+              ) : (
+                <Moon className="h-4 w-4 text-slate-600" />
+              )
+            ) : (
+              <span className="h-4 w-4" />
+            )}
+          </button>
+
+          {/* GitHub Repository */}
           <a
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub Repository"
-            className="flex h-8 w-8 items-center justify-center rounded border border-white/[0.08] bg-[#0d1117] text-[#8b949e] hover:text-white hover:border-white/20 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
           >
             <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
               <path

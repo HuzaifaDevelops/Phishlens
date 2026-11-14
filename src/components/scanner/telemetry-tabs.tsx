@@ -32,24 +32,24 @@ export function TelemetryTabs({ scan }: TelemetryTabsProps) {
   const isMalicious = scan.riskLevel === 'MALICIOUS';
 
   return (
-    <Card className="border border-white/10 bg-slate-900/40 backdrop-blur-md shadow-2xl">
-      <CardHeader className="pb-3 border-b border-white/5">
+    <Card className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e293b] text-slate-900 dark:text-slate-100 shadow-xs rounded-xl transition-colors">
+      <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-700/80">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <CardTitle className="text-base font-semibold text-white flex items-center gap-2">
-              <Database className="h-4 w-4 text-cyan-400" />
-              Technical Telemetry & Evidence Inspector
+            <CardTitle className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2 font-sans">
+              <Database className="h-4 w-4 text-indigo-600 dark:text-sky-400" />
+              Technical evidence & telemetry
             </CardTitle>
-            <p className="text-xs text-slate-400">
-              Live automated diagnostics collected from DNS, WHOIS, TLS, DOM Sandbox, and Threat DBs
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-sans mt-0.5">
+              Live automated diagnostics collected from DNS, WHOIS, TLS, DOM sandbox, and threat feeds
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="border-cyan-500/30 bg-cyan-500/10 text-cyan-400 font-mono text-[10px]">
-              RFC-compliant Probes
+            <Badge variant="outline" className="border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-sans text-xs">
+              Protocol: HTTP / HTTPS
             </Badge>
-            <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-mono text-[10px]">
-              Zero-Trust Isolated
+            <Badge variant="outline" className="border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-sans text-xs">
+              Sandboxed
             </Badge>
           </div>
         </div>
@@ -57,25 +57,25 @@ export function TelemetryTabs({ scan }: TelemetryTabsProps) {
 
       <CardContent className="pt-4">
         <Tabs defaultValue="heuristics" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-slate-950/70 p-1 border border-white/5 rounded-xl">
-            <TabsTrigger value="heuristics" className="text-xs font-mono">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-slate-100 dark:bg-slate-800/90 p-1 border border-slate-200 dark:border-slate-700 rounded-lg">
+            <TabsTrigger value="heuristics" className="text-xs font-sans font-medium text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0b1220] data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs">
               Heuristics ({scan.heuristics.length})
             </TabsTrigger>
-            <TabsTrigger value="sandbox" className="text-xs font-mono flex items-center gap-1">
-              <Eye className="h-3 w-3 text-cyan-400" />
-              Sandbox View
+            <TabsTrigger value="sandbox" className="text-xs font-sans font-medium text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0b1220] data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs flex items-center gap-1">
+              <Eye className="h-3.5 w-3.5" />
+              Sandbox preview
             </TabsTrigger>
-            <TabsTrigger value="whois" className="text-xs font-mono">
-              WHOIS & Age
+            <TabsTrigger value="whois" className="text-xs font-sans font-medium text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0b1220] data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs">
+              WHOIS & age
             </TabsTrigger>
-            <TabsTrigger value="ssl" className="text-xs font-mono">
+            <TabsTrigger value="ssl" className="text-xs font-sans font-medium text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0b1220] data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs">
               SSL / TLS
             </TabsTrigger>
-            <TabsTrigger value="redirects" className="text-xs font-mono">
+            <TabsTrigger value="redirects" className="text-xs font-sans font-medium text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0b1220] data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs">
               Redirects ({scan.redirectChain.length})
             </TabsTrigger>
-            <TabsTrigger value="feeds" className="text-xs font-mono">
-              Threat Feeds
+            <TabsTrigger value="feeds" className="text-xs font-sans font-medium text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0b1220] data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs">
+              Threat feeds
             </TabsTrigger>
           </TabsList>
 
@@ -95,46 +95,46 @@ export function TelemetryTabs({ scan }: TelemetryTabsProps) {
             )}
 
             <div className="space-y-2">
-              <div className="text-xs text-slate-400 font-mono flex items-center justify-between">
-                <span>Rule Engine Score Contributions:</span>
-                <span>Max Penalty: 100 pts</span>
+              <div className="text-xs text-slate-500 dark:text-slate-400 font-sans flex items-center justify-between">
+                <span>Rule engine score contributions:</span>
+                <span>Max penalty: 100 pts</span>
               </div>
 
               <div className="grid grid-cols-1 gap-2.5">
                 {scan.heuristics.map((item) => (
                   <div
                     key={item.id}
-                    className={`p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                    className={`p-3 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
                       item.status === 'failed'
-                        ? 'border-rose-500/30 bg-rose-950/10'
+                        ? 'border-rose-200 dark:border-rose-900/50 bg-rose-50/60 dark:bg-rose-950/20'
                         : item.status === 'warning'
-                        ? 'border-amber-500/30 bg-amber-950/10'
-                        : 'border-emerald-500/20 bg-emerald-950/10'
+                        ? 'border-amber-200 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20'
+                        : 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20'
                     }`}
                   >
                     <div className="flex items-start gap-2.5 min-w-0">
                       {item.status === 'failed' && (
-                        <XCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+                        <XCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
                       )}
                       {item.status === 'warning' && (
-                        <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+                        <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                       )}
                       {item.status === 'passed' && (
-                        <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                       )}
                       <div>
-                        <div className="text-sm font-semibold text-white">{item.name}</div>
-                        <div className="text-xs text-slate-400">{item.description}</div>
+                        <div className="text-sm font-semibold text-slate-900 dark:text-white font-sans">{item.name}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 font-sans">{item.description}</div>
                       </div>
                     </div>
 
                     <div className="shrink-0 self-end sm:self-center font-mono text-xs">
                       {item.scoreImpact > 0 ? (
-                        <span className="text-rose-400 font-bold bg-rose-950/50 px-2 py-0.5 rounded border border-rose-500/20">
+                        <span className="text-rose-700 dark:text-rose-300 font-semibold bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-800">
                           +{item.scoreImpact} pts
                         </span>
                       ) : (
-                        <span className="text-emerald-400 font-medium bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <span className="text-emerald-700 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
                           0 pts (Clean)
                         </span>
                       )}
@@ -157,51 +157,51 @@ export function TelemetryTabs({ scan }: TelemetryTabsProps) {
           {/* TAB 3: WHOIS & DOMAIN AGE */}
           <TabsContent value="whois" className="mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl border border-white/5 bg-slate-950/50 space-y-3">
+              <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/50 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-slate-400 uppercase">Domain Age</span>
+                  <span className="text-xs font-sans text-slate-500 dark:text-slate-400">Domain age</span>
                   <Badge
                     variant="outline"
                     className={`${
                       scan.whois.domainAgeDays < 30
-                        ? 'border-rose-500/30 text-rose-400 bg-rose-950/20'
-                        : 'border-emerald-500/30 text-emerald-400 bg-emerald-950/20'
-                    }`}
+                        ? 'border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40'
+                        : 'border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40'
+                    } text-xs font-sans`}
                   >
-                    {scan.whois.domainAgeDays} Days Old
+                    {scan.whois.domainAgeDays} days old
                   </Badge>
                 </div>
-                <div className="text-2xl font-bold text-white font-mono">
+                <div className="text-2xl font-bold text-slate-900 dark:text-white font-sans">
                   {scan.whois.domainAgeDays}{' '}
-                  <span className="text-sm font-normal text-slate-400">days active</span>
+                  <span className="text-sm font-normal text-slate-500 dark:text-slate-400 font-sans">days active</span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
                   {scan.whois.domainAgeDays < 30
                     ? '⚠️ Domains registered within the last 30 days account for over 85% of malicious credential-harvesting attacks.'
                     : '✓ Domain possesses an established historical age footprint.'}
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl border border-white/5 bg-slate-950/50 space-y-2.5 font-mono text-xs">
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-slate-400">Target Domain:</span>
-                  <span className="text-white font-semibold">{scan.whois.domain}</span>
+              <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/50 space-y-2.5 text-xs">
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Target domain:</span>
+                  <span className="text-slate-900 dark:text-white font-mono font-medium">{scan.whois.domain}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-slate-400">Registrar:</span>
-                  <span className="text-slate-200">{scan.whois.registrar}</span>
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Registrar:</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-sans">{scan.whois.registrar}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-slate-400">Creation Date:</span>
-                  <span className="text-slate-200">{scan.whois.creationDate}</span>
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Creation date:</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-mono">{scan.whois.creationDate}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-slate-400">Expiry Date:</span>
-                  <span className="text-slate-200">{scan.whois.expiryDate}</span>
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Expiry date:</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-mono">{scan.whois.expiryDate}</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-slate-400">Registrant Country:</span>
-                  <span className="text-cyan-400 font-bold">{scan.whois.registrantCountry}</span>
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Registrant country:</span>
+                  <span className="text-indigo-600 dark:text-sky-400 font-sans font-medium">{scan.whois.registrantCountry}</span>
                 </div>
               </div>
             </div>
@@ -210,45 +210,45 @@ export function TelemetryTabs({ scan }: TelemetryTabsProps) {
           {/* TAB 4: SSL / TLS */}
           <TabsContent value="ssl" className="mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl border border-white/5 bg-slate-950/50 space-y-3">
+              <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/50 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-slate-400 uppercase">TLS Status</span>
+                  <span className="text-xs font-sans text-slate-500 dark:text-slate-400">TLS status</span>
                   <Badge
                     variant="outline"
                     className={`${
                       scan.ssl.isValid
-                        ? 'border-emerald-500/30 text-emerald-400 bg-emerald-950/20'
-                        : 'border-rose-500/30 text-rose-400 bg-rose-950/20'
-                    }`}
+                        ? 'border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40'
+                        : 'border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40'
+                    } text-xs font-sans`}
                   >
-                    {scan.ssl.isValid ? 'Valid Certificate' : 'Missing / Insecure'}
+                    {scan.ssl.isValid ? 'Valid certificate' : 'Missing / Insecure'}
                   </Badge>
                 </div>
-                <div className="text-lg font-semibold text-white">
+                <div className="text-base font-semibold text-slate-900 dark:text-white font-sans">
                   {scan.ssl.issuer}
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
                   Note: A valid padlock does not guarantee safety. Over 70% of phishing sites today use free automated SSL certificates (e.g. Let&apos;s Encrypt) to deceptively show a green padlock.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl border border-white/5 bg-slate-950/50 space-y-2.5 font-mono text-xs">
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-slate-400">Valid From:</span>
-                  <span className="text-slate-200">{scan.ssl.validFrom}</span>
+              <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/50 space-y-2.5 text-xs">
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Valid from:</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-mono">{scan.ssl.validFrom}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-slate-400">Valid Until:</span>
-                  <span className="text-slate-200">{scan.ssl.validTo}</span>
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Valid until:</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-mono">{scan.ssl.validTo}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-slate-400">Days Remaining:</span>
-                  <span className="text-slate-200">{scan.ssl.daysRemaining} days</span>
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Days remaining:</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-sans">{scan.ssl.daysRemaining} days</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-slate-400">Self-Signed:</span>
-                  <span className={scan.ssl.isSelfSigned ? 'text-rose-400' : 'text-emerald-400'}>
-                    {scan.ssl.isSelfSigned ? 'YES (Warning)' : 'NO (Trusted CA)'}
+                  <span className="text-slate-500 dark:text-slate-400 font-sans">Self-signed:</span>
+                  <span className={scan.ssl.isSelfSigned ? 'text-rose-600 dark:text-rose-400 font-medium' : 'text-emerald-600 dark:text-emerald-400 font-medium'}>
+                    {scan.ssl.isSelfSigned ? 'Yes (Warning)' : 'No (Trusted CA)'}
                   </span>
                 </div>
               </div>
@@ -262,33 +262,33 @@ export function TelemetryTabs({ scan }: TelemetryTabsProps) {
 
           {/* TAB 6: THREAT FEEDS */}
           <TabsContent value="feeds" className="mt-4 space-y-3">
-            <div className="text-xs text-slate-400 font-mono">
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-sans">
               Real-time synchronization with industry threat databases:
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {scan.threatFeeds.map((feed, idx) => (
                 <div
                   key={idx}
-                  className={`p-3.5 rounded-xl border flex flex-col justify-between gap-2 ${
+                  className={`p-4 rounded-lg border flex flex-col justify-between gap-2 ${
                     feed.detected
-                      ? 'border-rose-500/30 bg-rose-950/10'
-                      : 'border-white/5 bg-slate-950/40'
+                      ? 'border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/20'
+                      : 'border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/50'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-white">{feed.source}</span>
+                    <span className="text-sm font-semibold text-slate-900 dark:text-white font-sans">{feed.source}</span>
                     <Badge
                       variant="outline"
                       className={`${
                         feed.detected
-                          ? 'border-rose-500/30 text-rose-400 bg-rose-950/30'
-                          : 'border-emerald-500/30 text-emerald-400 bg-emerald-950/20'
-                      } text-[10px] font-mono`}
+                          ? 'border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40'
+                          : 'border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40'
+                      } text-xs font-sans`}
                     >
-                      {feed.detected ? 'DETECTION' : 'CLEAN'}
+                      {feed.detected ? 'Detection' : 'Clean'}
                     </Badge>
                   </div>
-                  <p className="text-xs text-slate-400 leading-relaxed font-sans">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
                     {feed.details}
                   </p>
                 </div>

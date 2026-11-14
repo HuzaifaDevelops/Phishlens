@@ -15,6 +15,11 @@ enum RiskLevel {
 
 model Scan {
   id                String    @id @default(cuid())
+  userId            String?
+  user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  visitorId         String    @default("anonymous")
+  deviceHash        String?   @db.VarChar(128)
+  ipAddress         String?   @db.VarChar(64)
   inputUrl          String    @db.VarChar(2048)
   normalizedUrl     String    @db.VarChar(2048)
   finalUrl          String    @db.VarChar(2048)
@@ -33,15 +38,23 @@ model Scan {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
+  @@index([deviceHash, createdAt])
+  @@index([ipAddress, createdAt])
+  @@index([userId, createdAt])
+  @@index([visitorId, createdAt])
   @@index([normalizedUrl(length: 255)])
   @@index([createdAt])
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String?
   name         String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  image        String?
+  googleId     String?   @unique
+  role         String    @default("user")
+  scans        Scan[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }

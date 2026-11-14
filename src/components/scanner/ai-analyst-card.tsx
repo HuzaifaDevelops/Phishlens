@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { AIAnalysis } from '@/lib/types';
-import { Terminal, ShieldAlert, CheckCircle, Cpu, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, CheckCircle, Sparkles } from 'lucide-react';
 
 interface AIAnalystCardProps {
   analysis: AIAnalysis;
@@ -11,31 +11,41 @@ interface AIAnalystCardProps {
 
 export function AIAnalystCard({ analysis, isMalicious }: AIAnalystCardProps) {
   return (
-    <div className="corner-crosshair p-6 bg-[#0c1017] border border-white/[0.08] rounded h-full flex flex-col justify-between space-y-4">
+    <div className="p-6 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs h-full flex flex-col justify-between space-y-4 font-sans transition-colors">
       {/* Dossier Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/[0.06] font-mono text-[11px]">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-700 text-xs">
         <div className="flex items-center gap-2">
-          <Terminal className="h-4 w-4 text-[#58a6ff]" />
-          <span className="font-bold text-white tracking-wide">
-            EXPLAINABLE_AI_BRIEFING // INCIDENT_DOSSIER
+          <Sparkles className="h-4 w-4 text-indigo-600 dark:text-sky-400" />
+          <span className="font-semibold text-slate-900 dark:text-white">
+            Analysis & Verdict
           </span>
+          {analysis.engine === 'gemini' ? (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-sky-300 border border-indigo-200 dark:border-indigo-800">
+              <Sparkles className="h-2.5 w-2.5 text-indigo-600 dark:text-sky-400" />
+              Google Gemini
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+              Forensic Engine
+            </span>
+          )}
         </div>
-        <div className="text-[#8b949e] flex items-center gap-2">
-          <span>MODEL: GEMINI_XAI_V2</span>
+        <div className="text-slate-500 dark:text-slate-400 flex items-center gap-2 text-xs">
+          <span>AI Assisted</span>
           <span>•</span>
-          <span className="text-[#3fb950] font-semibold">CONF: {analysis.confidenceScore}%</span>
+          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">{analysis.confidenceScore}% Confidence</span>
         </div>
       </div>
 
       {/* Target Impersonation Intercept Callout */}
       {analysis.impersonatedBrand && (
-        <div className="p-3 border border-[#f85149]/40 bg-[#f85149]/10 rounded flex items-start gap-2.5 font-mono text-xs">
-          <ShieldAlert className="h-4 w-4 text-[#f85149] shrink-0 mt-0.5" />
+        <div className="p-3.5 border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 rounded-lg flex items-start gap-2.5 text-xs text-rose-800 dark:text-rose-300">
+          <ShieldAlert className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold text-[#f85149] uppercase">TARGET_IMPERSONATION_INTERCEPT: </span>
-            <span className="text-[#e6edf3]">
-              Active deception detected mimicking{' '}
-              <strong className="text-white underline decoration-[#f85149] font-bold">
+            <span className="font-semibold text-rose-900 dark:text-rose-200">Brand impersonation detected: </span>
+            <span>
+              This target attempts to mimic{' '}
+              <strong className="text-rose-900 dark:text-rose-200 underline font-bold">
                 {analysis.impersonatedBrand}
               </strong>
             </span>
@@ -45,10 +55,10 @@ export function AIAnalystCard({ analysis, isMalicious }: AIAnalystCardProps) {
 
       {/* Plain English Assessment */}
       <div className="space-y-1.5">
-        <div className="font-mono text-[11px] text-[#8b949e] uppercase tracking-wider">
-          // SYNTHESIS & BEHAVIORAL REASONING
+        <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          Forensic reasoning
         </div>
-        <p className="p-3.5 rounded bg-[#161b22]/70 border border-white/[0.06] text-sm text-[#c9d1d9] leading-relaxed font-sans">
+        <p className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
           {analysis.verdictSummary}
         </p>
       </div>
@@ -56,30 +66,30 @@ export function AIAnalystCard({ analysis, isMalicious }: AIAnalystCardProps) {
       {/* Identified Tactical Indicators */}
       {analysis.threatTactics.length > 0 && (
         <div className="space-y-2">
-          <div className="font-mono text-[11px] text-[#8b949e] uppercase tracking-wider">
-            // FORENSIC_INDICATORS_TRIGGERED ({analysis.threatTactics.length})
+          <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Observed risk factors ({analysis.threatTactics.length})
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {analysis.threatTactics.map((tactic, idx) => (
               <div
                 key={idx}
-                className="flex items-start gap-2 p-2 rounded bg-[#07090d] border border-white/[0.05] text-xs text-[#8b949e] font-mono"
+                className="flex items-start gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300"
               >
-                <span className="text-[#f85149] font-bold">#0{idx + 1}</span>
-                <span className="text-[#c9d1d9]">{tactic}</span>
+                <span className="text-rose-600 dark:text-rose-400 font-bold shrink-0">•</span>
+                <span>{tactic}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Prescribed Countermeasure */}
-      <div className="p-3 rounded border border-[#388bfd]/30 bg-[#388bfd]/10 font-mono text-xs space-y-1">
-        <div className="flex items-center gap-1.5 text-[#58a6ff] font-bold text-[11px]">
-          <CheckCircle className="h-3.5 w-3.5" />
-          <span>PRESCRIBED_OPERATOR_ACTION</span>
+      {/* Recommended Action */}
+      <div className="p-3.5 rounded-lg border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/70 dark:bg-indigo-950/40 text-xs space-y-1">
+        <div className="flex items-center gap-1.5 text-indigo-900 dark:text-indigo-300 font-semibold text-xs">
+          <CheckCircle className="h-4 w-4 text-indigo-600 dark:text-sky-400" />
+          <span>Recommended action</span>
         </div>
-        <p className="text-[#c9d1d9] leading-relaxed font-sans text-xs">
+        <p className="text-indigo-950 dark:text-indigo-200 leading-relaxed font-sans text-xs">
           {analysis.recommendedAction}
         </p>
       </div>

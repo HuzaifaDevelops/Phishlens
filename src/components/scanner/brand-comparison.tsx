@@ -44,84 +44,84 @@ export function BrandComparison({
   };
 
   return (
-    <div className="p-4 rounded-xl border border-rose-500/20 bg-slate-950/70 space-y-4">
+    <div className="p-4 rounded-lg border border-rose-200 dark:border-rose-900/40 bg-rose-50/40 dark:bg-slate-900 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="h-4 w-4 text-rose-400" />
-          <span className="text-xs font-semibold text-white font-mono uppercase tracking-wider">
-            Brand Impersonation Differential Analysis
+          <ShieldAlert className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+          <span className="text-xs font-semibold text-slate-900 dark:text-white font-sans">
+            Brand impersonation differential analysis
           </span>
         </div>
-        <Badge variant="outline" className="border-rose-500/40 bg-rose-500/10 text-rose-300 text-[10px] font-mono">
-          High-Confidence Spoof Match
+        <Badge variant="outline" className="border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-sans">
+          High confidence spoof match
         </Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Real Brand Card */}
-        <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-950/10 space-y-2.5">
+        <div className="p-3.5 rounded-lg border border-emerald-200 dark:border-emerald-900/50 bg-white dark:bg-emerald-950/20 space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 font-mono">
-              <ShieldCheck className="h-4 w-4" /> AUTHENTIC BRAND
+            <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 font-sans">
+              <ShieldCheck className="h-4 w-4" /> Authentic brand
             </span>
-            <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+            <Badge className="bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 text-xs font-sans">
               Verified
             </Badge>
           </div>
-          <div className="text-sm font-bold text-white">{impersonatedBrand}</div>
+          <div className="text-sm font-semibold text-slate-900 dark:text-white font-sans">{impersonatedBrand}</div>
 
-          <div className="space-y-1.5 text-xs font-mono text-slate-300">
-            <div className="flex items-center justify-between py-1 border-b border-white/5">
-              <span className="text-slate-500 flex items-center gap-1">
-                <Globe className="h-3 w-3" /> Official Host:
+          <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+            <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-sans">
+                <Globe className="h-3 w-3" /> Official host:
               </span>
-              <span className="text-emerald-300 font-semibold">{realData.officialDomain}</span>
+              <span className="text-emerald-700 dark:text-emerald-300 font-mono font-medium">{realData.officialDomain}</span>
             </div>
-            <div className="flex items-center justify-between py-1 border-b border-white/5">
-              <span className="text-slate-500 flex items-center gap-1">
-                <Calendar className="h-3 w-3" /> Domain Age:
+            <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-sans">
+                <Calendar className="h-3 w-3" /> Domain age:
               </span>
-              <span className="text-slate-200">{realData.ageYears}+ Years Active</span>
+              <span className="text-slate-800 dark:text-slate-200 font-sans">{realData.ageYears}+ years active</span>
             </div>
             <div className="flex items-center justify-between py-1">
-              <span className="text-slate-500 flex items-center gap-1">
-                <Lock className="h-3 w-3" /> SSL Security:
+              <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-sans">
+                <Lock className="h-3 w-3" /> SSL certificate:
               </span>
-              <span className="text-slate-200 truncate max-w-[150px]">{realData.sslIssuer}</span>
+              <span className="text-slate-800 dark:text-slate-200 truncate max-w-[150px] font-sans">{realData.sslIssuer}</span>
             </div>
           </div>
         </div>
 
         {/* Fake Imposter Card */}
-        <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-950/20 space-y-2.5">
+        <div className="p-3.5 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-white dark:bg-rose-950/20 space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-rose-400 flex items-center gap-1.5 font-mono">
-              <ShieldAlert className="h-4 w-4" /> DETECTED IMPOSTER
+            <span className="text-xs font-semibold text-rose-700 dark:text-rose-400 flex items-center gap-1.5 font-sans">
+              <ShieldAlert className="h-4 w-4" /> Detected imposter
             </span>
-            <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30 text-[10px]">
-              Fraudulent
+            <Badge className="bg-rose-50 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800 text-xs font-sans">
+              Deceptive
             </Badge>
           </div>
-          <div className="text-sm font-bold text-rose-200 truncate">{fakeDomain}</div>
+          <div className="text-sm font-semibold text-rose-700 dark:text-rose-200 truncate font-mono">{fakeDomain}</div>
 
-          <div className="space-y-1.5 text-xs font-mono text-slate-300">
-            <div className="flex items-center justify-between py-1 border-b border-white/5">
-              <span className="text-slate-500 flex items-center gap-1">
-                <Globe className="h-3 w-3" /> Spoofed Host:
+          <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+            <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-sans">
+                <Globe className="h-3 w-3" /> Spoofed host:
               </span>
-              <span className="text-rose-400 font-bold underline decoration-rose-500">{fakeDomain}</span>
+              <span className="text-rose-700 dark:text-rose-300 font-mono font-medium">{fakeDomain}</span>
             </div>
-            <div className="flex items-center justify-between py-1 border-b border-white/5">
-              <span className="text-slate-500 flex items-center gap-1">
-                <Calendar className="h-3 w-3" /> Domain Age:
+            <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-sans">
+                <Calendar className="h-3 w-3" /> Domain age:
               </span>
-              <span className="text-rose-400 font-bold">{fakeAgeDays} Days Old (High Risk)</span>
+              <span className="text-rose-700 dark:text-rose-300 font-sans">{fakeAgeDays} days old (High Risk)</span>
             </div>
             <div className="flex items-center justify-between py-1">
-              <span className="text-slate-500 flex items-center gap-1">
-                <Lock className="h-3 w-3" /> SSL Security:
+              <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-sans">
+                <Lock className="h-3 w-3" /> SSL certificate:
               </span>
-              <span className="text-rose-300 truncate max-w-[150px]">{fakeSsl}</span>
+              <span className="text-slate-800 dark:text-slate-200 truncate max-w-[150px] font-sans">{fakeSsl}</span>
             </div>
           </div>
         </div>

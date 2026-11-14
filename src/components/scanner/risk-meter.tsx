@@ -12,34 +12,34 @@ interface RiskMeterProps {
 export function RiskMeter({ score, level }: RiskMeterProps) {
   const config = {
     SAFE: {
-      color: 'text-[#3fb950]',
-      borderColor: 'border-[#238636]/40',
-      bgColor: 'bg-[#238636]/10',
-      strokeColor: '#3fb950',
-      code: 'VERIFIED_BENIGN // ZERO_MATCH',
-      label: 'STATUS: BENIGN / VERIFIED',
+      color: 'text-emerald-700 dark:text-emerald-400',
+      borderColor: 'border-emerald-200 dark:border-emerald-800/60',
+      bgColor: 'bg-emerald-50 dark:bg-emerald-950/40',
+      strokeColor: '#059669',
+      riskTier: 'Low Risk',
+      label: 'Safe — Verified',
       icon: CheckCircle2,
-      summary: 'Domain telemetry matches verified enterprise infrastructure.',
+      summary: 'Domain telemetry matches verified legitimate enterprise infrastructure.',
     },
     SUSPICIOUS: {
-      color: 'text-[#d29922]',
-      borderColor: 'border-[#d29922]/40',
-      bgColor: 'bg-[#d29922]/10',
-      strokeColor: '#d29922',
-      code: 'ANOMALY_FLAGGED // ELEVATED_RISK',
-      label: 'STATUS: SUSPICIOUS / CAUTION',
+      color: 'text-amber-700 dark:text-amber-400',
+      borderColor: 'border-amber-200 dark:border-amber-800/60',
+      bgColor: 'bg-amber-50 dark:bg-amber-950/40',
+      strokeColor: '#d97706',
+      riskTier: 'Elevated Risk',
+      label: 'Suspicious — Caution',
       icon: AlertTriangle,
-      summary: 'Multiple heuristic anomalies detected: young age & generic urgency.',
+      summary: 'Multiple heuristic anomalies detected: young domain age and suspicious lexical patterns.',
     },
     MALICIOUS: {
-      color: 'text-[#f85149]',
-      borderColor: 'border-[#f85149]/50',
-      bgColor: 'bg-[#f85149]/10',
-      strokeColor: '#f85149',
-      code: 'CRITICAL_THREAT // HARVEST_ACTIVE',
-      label: 'STATUS: CRITICAL / MALICIOUS PHISHING',
+      color: 'text-rose-700 dark:text-rose-400',
+      borderColor: 'border-rose-200 dark:border-rose-800/60',
+      bgColor: 'bg-rose-50 dark:bg-rose-950/40',
+      strokeColor: '#e11d48',
+      riskTier: 'High Risk',
+      label: 'Malicious — Phishing',
       icon: AlertOctagon,
-      summary: 'Active credential spoofing signature detected across threat feeds.',
+      summary: 'Active credential spoofing or deceptive signature detected across threat intelligence feeds.',
     },
   }[level];
 
@@ -49,35 +49,24 @@ export function RiskMeter({ score, level }: RiskMeterProps) {
   const strokeDashoffset = circumference - (score / 100) * circumference;
 
   return (
-    <div className="corner-crosshair p-6 flex flex-col items-center justify-between h-full bg-[#0c1017] border border-white/[0.08] rounded">
-      {/* Header Stamp */}
-      <div className="w-full flex items-center justify-between pb-4 border-b border-white/[0.06] font-mono text-[11px] text-[#8b949e]">
-        <span>INSTRUMENT // THREAT_INDEX</span>
-        <span className="text-[#c9d1d9]">{config.code}</span>
+    <div className="p-6 flex flex-col items-center justify-between h-full bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs font-sans transition-colors">
+      {/* Header */}
+      <div className="w-full flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 font-medium">
+        <span>Threat Assessment</span>
+        <span className={`font-semibold ${config.color}`}>{config.riskTier}</span>
       </div>
 
       {/* Main Gauge Visual */}
       <div className="relative my-6 flex items-center justify-center">
-        {/* Calibrated Circular Arc */}
         <svg className="h-40 w-40 -rotate-90 transform" viewBox="0 0 140 140">
           {/* Background Rail */}
           <circle
             cx="70"
             cy="70"
             r={radius}
-            stroke="#161b22"
-            strokeWidth="8"
+            strokeWidth="9"
             fill="transparent"
-          />
-          {/* Ticks Pattern */}
-          <circle
-            cx="70"
-            cy="70"
-            r={radius}
-            stroke="rgba(255,255,255,0.06)"
-            strokeWidth="10"
-            strokeDasharray="2 6"
-            fill="transparent"
+            className="stroke-slate-100 dark:stroke-slate-700/60"
           />
           {/* Active Metric Arc */}
           <circle
@@ -85,47 +74,46 @@ export function RiskMeter({ score, level }: RiskMeterProps) {
             cy="70"
             r={radius}
             stroke={config.strokeColor}
-            strokeWidth="8"
+            strokeWidth="9"
             fill="transparent"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
-            strokeLinecap="square"
+            strokeLinecap="round"
             className="transition-all duration-700 ease-out"
           />
         </svg>
 
         {/* Center Readout */}
-        <div className="absolute flex flex-col items-center justify-center font-mono">
-          <div className="text-3xl font-bold tracking-tighter text-white">
+        <div className="absolute flex flex-col items-center justify-center">
+          <div className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white font-sans">
             {score}
-            <span className="text-xs font-normal text-[#8b949e]">/100</span>
           </div>
-          <span className="text-[10px] tracking-widest uppercase text-[#8b949e] mt-0.5">
-            CALIBRATED
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-sans mt-0.5">
+            score / 100
           </span>
         </div>
       </div>
 
       {/* Verdict Strip */}
-      <div className="w-full space-y-3 font-mono text-center">
-        <div className={`p-2 rounded border ${config.borderColor} ${config.bgColor} flex items-center justify-center gap-2`}>
+      <div className="w-full space-y-3 text-center">
+        <div className={`p-3 rounded-lg border ${config.borderColor} ${config.bgColor} flex items-center justify-center gap-2`}>
           <Icon className={`h-4 w-4 ${config.color}`} />
-          <span className={`text-xs font-bold ${config.color}`}>{config.label}</span>
+          <span className={`text-xs font-semibold ${config.color}`}>{config.label}</span>
         </div>
-        <p className="text-xs text-[#8b949e] font-sans leading-relaxed text-left">
+        <p className="text-xs text-slate-600 dark:text-slate-300 font-sans leading-relaxed text-left">
           {config.summary}
         </p>
 
         {/* Micro Scale Bar */}
-        <div className="grid grid-cols-3 gap-1 pt-1 text-[10px] text-[#8b949e]">
-          <div className={`py-1 border ${score <= 30 ? 'border-[#238636] text-[#3fb950] font-bold' : 'border-white/[0.06]'}`}>
-            0-30 BENIGN
+        <div className="grid grid-cols-3 gap-1.5 pt-2 text-xs font-medium">
+          <div className={`py-1.5 px-2 rounded-md border text-center transition-colors ${score <= 30 ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-semibold' : 'border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 text-slate-400 dark:text-slate-500'}`}>
+            0-30 Safe
           </div>
-          <div className={`py-1 border ${score > 30 && score < 70 ? 'border-[#d29922] text-[#d29922] font-bold' : 'border-white/[0.06]'}`}>
-            31-69 WARN
+          <div className={`py-1.5 px-2 rounded-md border text-center transition-colors ${score > 30 && score < 70 ? 'border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 font-semibold' : 'border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 text-slate-400 dark:text-slate-500'}`}>
+            31-69 Caution
           </div>
-          <div className={`py-1 border ${score >= 70 ? 'border-[#f85149] text-[#f85149] font-bold' : 'border-white/[0.06]'}`}>
-            70-100 CRIT
+          <div className={`py-1.5 px-2 rounded-md border text-center transition-colors ${score >= 70 ? 'border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 font-semibold' : 'border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 text-slate-400 dark:text-slate-500'}`}>
+            70-100 Danger
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { getRecentScans } from '@/server/db/scan-service';
@@ -8,61 +9,64 @@ import { Terminal, Shield, ArrowUpRight, ArrowLeft, Database, Clock } from 'luci
 export const dynamic = 'force-dynamic';
 
 export default async function HistoryPage() {
-  const scans = await getRecentScans(50);
+  const cookieStore = await cookies();
+  const visitorId = cookieStore.get('phishlens_visitor_id')?.value;
+  // Visitor-scoped: filter exclusively by the current visitor's ID
+  const scans = visitorId ? await getRecentScans(50, visitorId) : [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07090d] text-[#e6edf3] selection:bg-[#388bfd]/30 selection:text-[#58a6ff] tactical-grid relative">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b1220] text-slate-900 dark:text-slate-200 selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-sky-950 dark:selection:text-sky-300 relative transition-colors">
       <Navbar />
 
       <main className="flex-1 container mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6">
         {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between font-mono text-xs text-[#8b949e]">
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-sans">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 hover:text-indigo-600 dark:hover:text-sky-400 transition-colors font-medium"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span>[ RETURN_TO_SCANNER ]</span>
+            <span>Back to scanner</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Database className="h-3.5 w-3.5 text-[#58a6ff]" />
-            <span>MYSQL_AUDIT_LOGS // RECENT_SCANS</span>
+            <Database className="h-3.5 w-3.5 text-indigo-600 dark:text-sky-400" />
+            <span>Audit log records</span>
           </div>
         </div>
 
         {/* Header Title */}
-        <div className="space-y-1 font-mono">
-          <h1 className="text-2xl font-bold text-white font-heading tracking-tight">
-            Historical Incident Audit Registry
+        <div className="space-y-1 font-sans">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Incident Registry
           </h1>
-          <p className="text-xs text-[#8b949e]">
-            Persistent database records of previous URL threat investigations, RFC diagnostics, and explainable verdicts.
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Persistent records of previous URL threat investigations, automated diagnostics, and verdicts.
           </p>
         </div>
 
         {/* Scan Log Table */}
-        <div className="rounded border border-white/[0.08] bg-[#0c1017] overflow-hidden">
-          <div className="p-3.5 border-b border-white/[0.06] flex items-center justify-between font-mono text-xs text-[#8b949e]">
-            <span>INDEXED_ENTRIES: {scans.length}</span>
-            <span>AUTO_PURGE_TTL: 30_DAYS</span>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e293b] shadow-xs overflow-hidden transition-colors">
+          <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-sans">
+            <span>Your indexed records: {scans.length}</span>
+            <span>Personal browser session</span>
           </div>
 
           {scans.length === 0 ? (
-            <div className="p-12 text-center font-mono text-xs text-[#8b949e] space-y-3">
-              <Clock className="h-8 w-8 text-[#58a6ff] mx-auto opacity-50" />
-              <p>NO_RECORDS_INDEXED_YET</p>
-              <p className="text-[11px] text-[#484f58]">
-                Scanned URLs will automatically persist here once the MySQL container is active.
+            <div className="p-12 text-center text-xs text-slate-500 dark:text-slate-400 space-y-3 font-sans">
+              <Clock className="h-8 w-8 text-indigo-600 dark:text-sky-400 mx-auto opacity-50" />
+              <p className="font-semibold text-slate-700 dark:text-slate-300">No records found yet</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                Scanned URLs will automatically persist here.
               </p>
               <Link
                 href="/"
-                className="inline-block mt-2 px-3 py-1.5 rounded border border-[#388bfd]/50 bg-[#388bfd] text-white font-bold"
+                className="inline-block mt-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-white dark:text-slate-950 font-medium transition-colors"
               >
-                EXECUTE_FIRST_SCAN
+                Start first scan
               </Link>
             </div>
           ) : (
-            <div className="divide-y divide-white/[0.04]">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {scans.map((scan) => {
                 const isMal = scan.riskLevel === 'MALICIOUS';
                 const isSusp = scan.riskLevel === 'SUSPICIOUS';
@@ -71,31 +75,31 @@ export default async function HistoryPage() {
                   <Link
                     key={scan.id}
                     href={`/scan/${scan.id}`}
-                    className="group p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-[#161b22]/50 transition-colors font-mono"
+                    className="group p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   >
                     <div className="flex items-start md:items-center gap-3 min-w-0">
                       <div
-                        className={`px-2 py-1 rounded text-xs font-bold border shrink-0 ${
+                        className={`px-2.5 py-1 rounded-md text-xs font-semibold border shrink-0 font-sans ${
                           isMal
-                            ? 'border-[#f85149]/50 bg-[#f85149]/10 text-[#f85149]'
+                            ? 'border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400'
                             : isSusp
-                            ? 'border-[#d29922]/50 bg-[#d29922]/10 text-[#d29922]'
-                            : 'border-[#238636]/50 bg-[#238636]/10 text-[#3fb950]'
+                            ? 'border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400'
+                            : 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400'
                         }`}
                       >
                         {scan.riskScore}/100 {scan.riskLevel}
                       </div>
 
                       <div className="min-w-0">
-                        <div className="text-sm font-semibold text-white group-hover:text-[#58a6ff] transition-colors truncate max-w-lg">
+                        <div className="text-sm font-semibold font-mono text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-sky-400 transition-colors truncate max-w-lg">
                           {scan.inputUrl}
                         </div>
-                        <div className="text-[11px] text-[#8b949e] flex items-center gap-2 mt-0.5">
+                        <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5 font-sans">
                           <span>{scan.timestamp.slice(0, 19).replace('T', ' ')} UTC</span>
                           {scan.aiAnalysis.impersonatedBrand && (
                             <>
                               <span>•</span>
-                              <span className="text-[#f85149]">
+                              <span className="text-rose-600 dark:text-rose-400 font-medium">
                                 Mimics {scan.aiAnalysis.impersonatedBrand}
                               </span>
                             </>
@@ -104,9 +108,9 @@ export default async function HistoryPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0 text-xs text-[#8b949e] group-hover:text-white transition-colors">
-                      <span>INSPECT_DOSSIER</span>
-                      <ArrowUpRight className="h-3.5 w-3.5 text-[#58a6ff]" />
+                    <div className="flex items-center gap-2 shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-sky-400 transition-colors font-sans">
+                      <span>View details</span>
+                      <ArrowUpRight className="h-4 w-4 text-indigo-600 dark:text-sky-400" />
                     </div>
                   </Link>
                 );

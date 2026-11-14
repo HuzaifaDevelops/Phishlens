@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { RedirectHop } from '@/lib/types';
 import { assertSafeTarget } from '../security/ssrf-guard';
 
@@ -40,20 +41,14 @@ export async function traceRedirects(initialUrl: string, maxHops = 5): Promise<R
     }
 
     try {
-      // Use AbortController with 3.5s timeout per hop
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-      const response = await fetch(currentUrl, {
-        method: 'HEAD',
-        redirect: 'manual',
-        signal: controller.signal,
+      const response = await axios.head(currentUrl, {
+        maxRedirects: 0,
+        validateStatus: () => true,
+        timeout: 3500,
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PhishLens-SecurityScanner/1.0',
         },
       });
-
-      clearTimeout(timeoutId);
 
       const statusCode = response.status;
       chain.push({
@@ -66,7 +61,7 @@ export async function traceRedirects(initialUrl: string, maxHops = 5): Promise<R
 
       // Check if this response redirects
       const isRedirect = [301, 302, 303, 307, 308].includes(statusCode);
-      const location = response.headers.get('location');
+      const location = response.headers['location'] as string | undefined;
 
       if (isRedirect && location) {
         // Resolve relative redirects against current URL

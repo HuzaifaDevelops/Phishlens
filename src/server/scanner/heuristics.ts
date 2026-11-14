@@ -196,23 +196,47 @@ export function evaluateHeuristics(
   }
 
   // 5. REDIRECT HOP OBFUSCATION
-  if (redirects.length > 2) {
+  // Determine if redirects cross distinct apex domains vs canonical normalization (e.g. youtube.com -> www.youtube.com or http -> https)
+  const getApexDomain = (hostname: string): string => {
+    const clean = hostname.toLowerCase().replace(/:\d+$/, '');
+    const parts = clean.split('.');
+    if (parts.length <= 2) return clean;
+    const secondLast = parts[parts.length - 2];
+    if (['co', 'com', 'org', 'net', 'edu', 'gov'].includes(secondLast) && parts.length >= 3) {
+      return parts.slice(-3).join('.');
+    }
+    return parts.slice(-2).join('.');
+  };
+
+  const firstHopApex = redirects.length > 0 ? getApexDomain(redirects[0].domain) : getApexDomain(parsed.hostname);
+  const crossDomainHops = redirects.filter((hop) => getApexDomain(hop.domain) !== firstHopApex);
+
+  if (crossDomainHops.length >= 2) {
     score += 20;
     heuristics.push({
       id: 'h-redirect-hops',
       name: `Multi-Hop Redirection Chain (${redirects.length} hops)`,
       status: 'warning',
       scoreImpact: +20,
-      description: 'Multiple intermediate jumps observed, characteristic of URL shortener masking.',
+      description: `Observed cross-domain hops (${crossDomainHops.length} external jumps), characteristic of URL shortener masking or cloaking.`,
     });
-  } else if (redirects.length === 2) {
+  } else if (crossDomainHops.length === 1) {
     score += 10;
     heuristics.push({
-      id: 'h-redirect-single',
-      name: 'Single Redirect Hop',
+      id: 'h-redirect-cross',
+      name: 'Cross-Domain Redirect Hop',
       status: 'warning',
       scoreImpact: +10,
-      description: 'Target bounced from initial entry URL to secondary host.',
+      description: `Initial target bounced across distinct domains to "${redirects[redirects.length - 1].domain}".`,
+    });
+  } else if (redirects.length > 1) {
+    // Canonical same-domain redirect (e.g. apex -> www or HTTP -> HTTPS)
+    heuristics.push({
+      id: 'h-redirect-canonical',
+      name: 'Canonical Protocol / Domain Normalization',
+      status: 'passed',
+      scoreImpact: 0,
+      description: `Redirect stayed within ${firstHopApex} (e.g. canonical HTTP to HTTPS or www upgrade).`,
     });
   }
 

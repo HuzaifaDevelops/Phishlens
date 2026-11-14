@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { ThreatFeedMatch } from '@/lib/types';
 
 interface VirusTotalAnalysisStats {
@@ -80,19 +81,14 @@ export async function queryVirusTotal(
       .replace(/\+/g, '-')
       .replace(/\//g, '_');
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4500);
-
-    const response = await fetch(`https://www.virustotal.com/api/v3/urls/${urlId}`, {
-      method: 'GET',
+    const response = await axios.get(`https://www.virustotal.com/api/v3/urls/${urlId}`, {
       headers: {
         'x-apikey': apiKey,
         Accept: 'application/json',
       },
-      signal: controller.signal,
+      timeout: 5000,
+      validateStatus: () => true,
     });
-
-    clearTimeout(timeoutId);
 
     // If URL has never been scanned by VirusTotal before (404)
     if (response.status === 404) {
@@ -130,11 +126,11 @@ export async function queryVirusTotal(
       };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`VirusTotal API returned status ${response.status}`);
     }
 
-    const payload: VirusTotalResponse = await response.json();
+    const payload: VirusTotalResponse = response.data;
     const stats = payload.data?.attributes?.last_analysis_stats;
     const results = payload.data?.attributes?.last_analysis_results;
 

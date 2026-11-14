@@ -24,41 +24,41 @@ export default async function ScanDetailPage({ params }: ScanDetailPageProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07090d] text-[#e6edf3] selection:bg-[#388bfd]/30 selection:text-[#58a6ff] tactical-grid relative">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b1220] text-slate-900 dark:text-slate-200 selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-sky-950 dark:selection:text-sky-300 relative transition-colors">
       <Navbar />
 
       <main className="flex-1 container mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6">
         {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between font-mono text-xs text-[#8b949e]">
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-sans">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 hover:text-indigo-600 dark:hover:text-sky-400 transition-colors font-medium"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span>[ RETURN_TO_SCANNER ]</span>
+            <span>Back to scanner</span>
           </Link>
           <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#3fb950]" />
-            <span>ARCHIVED_RECORD // PERMALINK_VERIFIED</span>
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span>Archived record</span>
           </div>
         </div>
 
         {/* Target Telemetry Bar */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-3.5 rounded border border-white/[0.08] bg-[#0c1017] font-mono">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e293b] shadow-xs font-sans transition-colors">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-white/[0.08] bg-[#161b22] text-[#58a6ff]">
-              <Terminal className="h-4 w-4" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400">
+              <Terminal className="h-5 w-5" />
             </div>
             <div className="min-w-0 text-left">
-              <div className="flex items-center gap-2 text-[11px] text-[#8b949e]">
-                <span>ARCHIVE_ID: {scan.id}</span>
+              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <span>Record ID: <span className="font-mono">{scan.id}</span></span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {scan.timestamp.slice(0, 19).replace('T', ' ')} UTC
                 </span>
               </div>
-              <div className="text-sm font-semibold text-white truncate max-w-xl">
+              <div className="text-sm font-semibold font-mono text-slate-900 dark:text-white truncate max-w-xl mt-0.5">
                 {scan.inputUrl}
               </div>
             </div>
@@ -67,9 +67,9 @@ export default async function ScanDetailPage({ params }: ScanDetailPageProps) {
           <div className="flex items-center gap-2 shrink-0">
             <Link
               href="/"
-              className="px-3 py-1.5 rounded border border-[#388bfd]/50 bg-[#388bfd] hover:bg-[#1f6feb] text-white font-bold text-xs font-mono transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-white dark:text-slate-950 font-medium text-xs font-sans transition-colors flex items-center gap-1.5 shadow-xs"
             >
-              <span>NEW_INVESTIGATION</span>
+              <span>New scan</span>
             </Link>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -21,18 +22,26 @@ const jakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "PhishLens | Forensic URL Threat Intelligence & Explainable AI",
-  description: "Tactical cybersecurity platform providing automated heuristic telemetry, RFC protocol validation, and explainable phishing threat intelligence.",
+  title: "PhishLens — Forensic URL Threat Intelligence",
+  description: "Check if a link is safe before you click it. Automated heuristics, DNS, WHOIS, TLS analysis, and explainable AI verdicts.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${jakartaSans.variable} dark h-full antialiased`}
+      suppressHydrationWarning
+      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${jakartaSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#07090d] text-[#e6edf3] font-sans selection:bg-[#388bfd]/30 selection:text-[#58a6ff]">
-        {children}
+      <body className="min-h-full flex flex-col bg-slate-50 dark:bg-[#0b1220] text-slate-900 dark:text-slate-200 font-sans antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-sky-950 dark:selection:text-sky-300 transition-colors">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          storageKey="phishlens-theme"
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,65 +1,49 @@
 import React from 'react';
-import { Terminal, Shield, Lock, FileCode } from 'lucide-react';
+import { Shield, Lock } from 'lucide-react';
 import Image from 'next/image';
-import logo from "@/assets/logo.png"
+import logo from '@/assets/logo.png';
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.08] bg-[#07090d] text-[#8b949e] py-10 mt-16 font-mono text-xs">
+    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1220] text-slate-500 dark:text-slate-400 py-10 mt-16 font-sans text-xs transition-colors">
       <div className="container mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* Col 1 */}
-          <div className="md:col-span-2 space-y-2">
+          {/* Col 1: Brand & Overview */}
+          <div className="md:col-span-2 space-y-3">
             <div className="flex items-center gap-2">
-              <Image src={logo} alt='Phishlens' width={40} height={40}/> 
+              <Image src={logo} alt="PhishLens" width={36} height={36} className="rounded" />
+              <span className="font-semibold text-slate-900 dark:text-white text-sm">PhishLens</span>
             </div>
-            <p className="text-xs text-[#8b949e] max-w-md leading-relaxed font-sans">
-              Tactical cybersecurity intelligence system combining deterministic rule heuristics,
-              DNS/WHOIS/TLS handshake telemetry, and Explainable AI (XAI) synthesis to deconstruct
-              phishing vectors in plain English.
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md leading-relaxed">
+              Automated heuristic telemetry, DNS/WHOIS/TLS handshake analysis, and Explainable AI
+              synthesis to deconstruct phishing vectors in plain English.
             </p>
-            <div className="flex items-center gap-4 text-[11px] pt-1 text-[#8b949e]">
-              <span className="flex items-center gap-1 text-[#58a6ff]">
-                <Lock className="h-3 w-3" /> SSRF Sandboxed
+            <div className="flex items-center gap-4 text-xs pt-1 text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+                <Lock className="h-3.5 w-3.5 text-indigo-600 dark:text-sky-400" /> SSRF Sandboxed
               </span>
-              <span className="flex items-center gap-1 text-[#3fb950]">
-                <Shield className="h-3 w-3" /> Zero-Trust Proxied
+              <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+                <Shield className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> Isolated Resolvers
               </span>
             </div>
           </div>
 
-          {/* Col 2 */}
-          <div className="space-y-2">
-            <div className="font-bold text-white text-xs uppercase tracking-wider">
-              [ SPECIFICATIONS ]
-            </div>
-            <ul className="space-y-1.5 text-xs text-[#8b949e]">
-              <li>Next.js 16 (App Router)</li>
-              <li>Tailwind CSS v4 Engine</li>
-              <li>MySQL Audit Persistence</li>
-              <li>Heuristic Rule Matrix</li>
-            </ul>
-          </div>
-
-          {/* Col 3 */}
-          <div className="space-y-2">
-            <div className="font-bold text-white text-xs uppercase tracking-wider">
-              [ SECURITY NOTICE ]
-            </div>
-            <div className="p-3 rounded border border-white/[0.08] bg-[#0c1017] text-[11px] leading-relaxed">
+          {/* Col 2: Security Notice (Specifications block cut as requested) */}
+          <div className="md:col-span-2 space-y-2">
+            <div className="font-semibold text-slate-900 dark:text-white text-xs">Security notice</div>
+            <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1e293b] text-slate-600 dark:text-slate-300 text-xs leading-relaxed">
               Target inspections are executed through isolated DNS sandbox resolvers without
               disclosing client identity or executing untrusted client scripts.
             </div>
           </div>
         </div>
 
-        <div className="pt-4 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#8b949e]">
+        <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
           <div>
-            &copy; {new Date().getFullYear()} PhishLens Intelligence. 6th Semester Web Technologies Capstone.
+            PhishLens — Web Technologies Capstone. Built with Next.js 16, Tailwind CSS, MySQL &amp; Prisma.
           </div>
-          <div className="flex items-center gap-4">
-            <span>SHA-256 VERIFIED</span>
-            <span>SYSTEM RUNTIME: 99.9%</span>
+          <div className="text-slate-400 dark:text-slate-500">
+            &copy; {new Date().getFullYear()} PhishLens
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { AIAnalysis, HeuristicItem, RiskLevel, SslData, WhoisData } from '@/lib/types';
 
 interface SynthesizerParams {
@@ -13,68 +14,90 @@ interface SynthesizerParams {
 
 /**
  * Synthesizes an Explainable AI (XAI) security briefing.
- * Uses Gemini API if GEMINI_API_KEY is defined in environment,
- * otherwise utilizes a deterministic forensic synthesis engine grounded in the real collected telemetry.
+ * Queries Google Gemini API if GEMINI_API_KEY is configured in the environment,
+ * with resilient multi-model failover and fallback to deterministic grounded forensic reasoning.
  */
 export async function synthesizeAiBriefing(params: SynthesizerParams): Promise<AIAnalysis> {
   const { url, riskScore, riskLevel, impersonatedBrand, whois, ssl, redirectsCount, heuristics } = params;
 
   // Extract key failed/warning heuristics for clear takeaways
   const failedRules = heuristics.filter((h) => h.status === 'failed' || h.status === 'warning');
-  const threatTactics = failedRules.map((h) => `${h.name}: ${h.description}`);
+  const fallbackTactics = failedRules.map((h) => `${h.name}: ${h.description}`);
 
   // Check if GEMINI_API_KEY is present
   const apiKey = process.env.GEMINI_API_KEY;
   if (apiKey) {
-    try {
-      const prompt = `You are PhishLens, an authoritative cybersecurity analyst.
-Analyze the following URL telemetry and generate a concise 2-3 sentence plain-English briefing for the user:
+    const candidateModels = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash'];
+
+    const prompt = `You are PhishLens, an authoritative cybersecurity analyst and forensic URL investigator.
+Analyze the following URL telemetry and generate a concise, professional plain-English security briefing for the user:
 - Target URL: ${url}
 - Threat Score: ${riskScore}/100 (${riskLevel})
 - Brand Target: ${impersonatedBrand || 'None identified'}
-- Domain Age: ${whois.domainAgeDays} days old
-- SSL Issuer: ${ssl.issuer} (Valid: ${ssl.isValid})
+- Domain Age: ${whois.domainAgeDays} days (${(whois.domainAgeDays / 365).toFixed(1)} years)
+- SSL Issuer: ${ssl.issuer || 'None/Unencrypted'} (Valid: ${ssl.isValid})
 - Redirect Hops: ${redirectsCount}
-- Triggered Rules: ${failedRules.map((r) => r.name).join(', ')}
+- Triggered Rules: ${failedRules.length > 0 ? failedRules.map((r) => r.name).join(', ') : 'None (clean)'}
 
-Return your answer strictly as JSON with the following structure:
+Return your answer strictly as JSON with this exact schema:
 {
-  "verdictSummary": "2-3 sentences explaining why this site is safe, suspicious, or dangerous in plain English.",
-  "recommendedAction": "Single imperative sentence instructing the user what to do."
+  "verdictSummary": "2-3 sentences explaining why this site is safe, suspicious, or dangerous in clear, authoritative plain English.",
+  "threatTactics": ["Array of 2-4 key observations or risk signals (e.g. Valid high-assurance SSL, Historical domain age, Typo-squatting attempt, etc.)"],
+  "recommendedAction": "Single imperative sentence instructing the user what concrete action to take.",
+  "confidenceScore": 95
 }`;
 
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: 'application/json' },
-          }),
-        }
-      );
+    for (const model of candidateModels) {
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-      if (res.ok) {
-        const data = await res.json();
-        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (rawText) {
-          const parsed = JSON.parse(rawText);
-          return {
-            verdictSummary: parsed.verdictSummary,
-            impersonatedBrand,
-            threatTactics: threatTactics.slice(0, 4),
-            recommendedAction: parsed.recommendedAction,
-            confidenceScore: Math.min(99, Math.max(75, 100 - Math.abs(50 - riskScore))),
-          };
+        const res = await axios.post(
+          endpoint,
+          {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.2,
+            },
+          },
+          {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 10000,
+            validateStatus: () => true,
+          }
+        );
+
+        if (res.status === 200) {
+          const rawText = res.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawText) {
+            const parsed = JSON.parse(rawText);
+            const tactics = Array.isArray(parsed.threatTactics) && parsed.threatTactics.length > 0
+              ? parsed.threatTactics.slice(0, 4)
+              : fallbackTactics.length > 0 ? fallbackTactics.slice(0, 4) : ['Clean telemetry indicators'];
+
+            return {
+              verdictSummary: parsed.verdictSummary || 'Target inspected by PhishLens security analysis.',
+              impersonatedBrand,
+              threatTactics: tactics,
+              recommendedAction: parsed.recommendedAction || 'Proceed with standard caution.',
+              confidenceScore: typeof parsed.confidenceScore === 'number'
+                ? Math.min(99, Math.max(70, parsed.confidenceScore))
+                : Math.min(99, Math.max(75, 100 - Math.abs(50 - riskScore))),
+              engine: 'gemini',
+            };
+          }
+        } else {
+          console.warn(`[AI Synthesizer] Model ${model} returned HTTP ${res.status}:`, res.data?.error?.message || res.statusText);
         }
+      } catch (err: any) {
+        // Continue to next model if timeout or network failure
+        console.warn(`[AI Synthesizer] Model ${model} failed:`, err?.message || err);
+        continue;
       }
-    } catch {
-      // Fallback to grounded deterministic briefing on failure
     }
   }
 
-  // Deterministic Grounded Forensic Synthesis
+  // Deterministic Grounded Forensic Synthesis (Fallback when offline or key absent)
   let verdictSummary = '';
   let recommendedAction = '';
 
@@ -109,8 +132,9 @@ Return your answer strictly as JSON with the following structure:
   return {
     verdictSummary,
     impersonatedBrand,
-    threatTactics: threatTactics.slice(0, 4),
+    threatTactics: fallbackTactics.length > 0 ? fallbackTactics.slice(0, 4) : ['Clean telemetry indicators'],
     recommendedAction,
     confidenceScore,
+    engine: 'grounded-engine',
   };
 }

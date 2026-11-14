@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { WhoisData } from '@/lib/types';
 
 /**
@@ -17,23 +18,19 @@ export async function inspectWhois(domain: string): Promise<WhoisData> {
   };
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-    const res = await fetch(`https://rdap.org/domain/${cleanDomain}`, {
-      signal: controller.signal,
+    const res = await axios.get(`https://rdap.org/domain/${cleanDomain}`, {
       headers: {
         Accept: 'application/rdap+json',
       },
+      timeout: 4000,
+      validateStatus: () => true,
     });
 
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
+    if (res.status !== 200) {
       return defaultWhois;
     }
 
-    const data = await res.json();
+    const data = res.data;
 
     // Extract events (registration, expiration)
     let registrationDateStr = '';

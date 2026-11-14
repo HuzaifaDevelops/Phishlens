@@ -27,6 +27,8 @@ export async function findCachedScan(
 
     if (!record) return null;
 
+    const hasGemini = Boolean(process.env.GEMINI_API_KEY);
+
     return {
       id: record.id,
       inputUrl: record.inputUrl,
@@ -41,6 +43,7 @@ export async function findCachedScan(
         threatTactics: (record.threatTactics as string[]) || [],
         recommendedAction: record.recommendedAction,
         confidenceScore: record.confidenceScore,
+        engine: hasGemini ? 'gemini' : 'grounded-engine',
       },
       redirectChain: record.redirectChain as unknown as ScanResult['redirectChain'],
       whois: record.whoisData as unknown as ScanResult['whois'],
@@ -55,13 +58,17 @@ export async function findCachedScan(
 }
 
 /**
- * Persists a completed scan result to MySQL.
+ * Persists a completed scan result to MySQL, linked to a specific visitorId.
  */
-export async function saveScanRecord(scan: ScanResult): Promise<string | null> {
+export async function saveScanRecord(
+  scan: ScanResult,
+  visitorId = 'anonymous'
+): Promise<string | null> {
   try {
     const record = await prisma.scan.create({
       data: {
         id: scan.id,
+        visitorId: visitorId || 'anonymous',
         inputUrl: scan.inputUrl,
         normalizedUrl: scan.normalizedUrl,
         finalUrl: scan.finalUrl,
@@ -98,6 +105,8 @@ export async function getScanRecordById(id: string): Promise<ScanResult | null> 
 
     if (!record) return null;
 
+    const hasGemini = Boolean(process.env.GEMINI_API_KEY);
+
     return {
       id: record.id,
       inputUrl: record.inputUrl,
@@ -112,6 +121,7 @@ export async function getScanRecordById(id: string): Promise<ScanResult | null> 
         threatTactics: (record.threatTactics as string[]) || [],
         recommendedAction: record.recommendedAction,
         confidenceScore: record.confidenceScore,
+        engine: hasGemini ? 'gemini' : 'grounded-engine',
       },
       redirectChain: record.redirectChain as unknown as ScanResult['redirectChain'],
       whois: record.whoisData as unknown as ScanResult['whois'],
@@ -125,16 +135,22 @@ export async function getScanRecordById(id: string): Promise<ScanResult | null> 
 }
 
 /**
- * Retrieves the most recent scan records for the scan history view.
+ * Retrieves the most recent scan records, optionally filtered by visitorId.
  */
-export async function getRecentScans(limit = 20): Promise<ScanResult[]> {
+export async function getRecentScans(
+  limit = 50,
+  visitorId?: string
+): Promise<ScanResult[]> {
   try {
     const records = await prisma.scan.findMany({
+      where: visitorId ? { visitorId } : undefined,
       take: limit,
       orderBy: {
         createdAt: 'desc',
       },
     });
+
+    const hasGemini = Boolean(process.env.GEMINI_API_KEY);
 
     return records.map((record) => ({
       id: record.id,
@@ -150,6 +166,7 @@ export async function getRecentScans(limit = 20): Promise<ScanResult[]> {
         threatTactics: (record.threatTactics as string[]) || [],
         recommendedAction: record.recommendedAction,
         confidenceScore: record.confidenceScore,
+        engine: hasGemini ? 'gemini' : 'grounded-engine',
       },
       redirectChain: record.redirectChain as unknown as ScanResult['redirectChain'],
       whois: record.whoisData as unknown as ScanResult['whois'],

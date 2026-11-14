@@ -50,6 +50,7 @@ export interface AIAnalysis {
   threatTactics: string[];
   recommendedAction: string;
   confidenceScore: number;
+  engine?: 'gemini' | 'grounded-engine';
 }
 
 export interface ScanResult {
